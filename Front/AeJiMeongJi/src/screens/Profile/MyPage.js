@@ -11,6 +11,7 @@ import ConnectMyInfo from '../../components/Profile/ConnectMyInfo';
 import LikeGuide from '../../components/Profile/LikeGuide';
 import NoGuide from '../../components/Profile/NoGuide';
 import {Colors} from '../../constants/styles';
+import {fetchLikedPlace} from '../../utils/place';
 import {fetchLikedGuide, getDog} from '../../utils/profile';
 
 const DummyData = [
@@ -52,18 +53,21 @@ const DummyData = [
 ];
 
 const MyPage = () => {
-  const [guide, setGuide] = useState();
+  const [place, setPlace] = useState(true);
+  const [guide, setGuide] = useState(true);
   const [source, setSource] = useState();
   const dogId = useSelector(state => state.profile.id);
   const [dogName, setDogName] = useState();
 
   useLayoutEffect(() => {
     const fetchInitialData = async () => {
-      const liked = await fetchLikedGuide();
+      // const likedGuide = await fetchLikedGuide();
+      // const likedPlace = await fetchLikedPlace();
 
       const res = await getDog(dogId);
       setDogName(res.name);
-      setGuide(liked.data);
+      // setGuide(likedGuide.data);
+      // setPlace(likedPlace.data)
       setSource(`http://i7d203.p.ssafy.io:8080/api/image/${res.imageName}`);
     };
     fetchInitialData();
@@ -75,8 +79,13 @@ const MyPage = () => {
       <View style={styles.ConnectMyInfo}>
         <ConnectMyInfo dogName={dogName} />
       </View>
-      <View style={styles.noGuideContainer}>{!guide && <NoGuide />}</View>
-      <View>
+      <View style={styles.noGuideContainer}>
+        {place && <NoGuide navigate="PlaceHome">장소</NoGuide>}
+      </View>
+      <View style={styles.noGuideContainer}>
+        {guide && <NoGuide navigate="Guide">가이드</NoGuide>}
+      </View>
+      {/* <View>
         <Text style={styles.likedTitle}> 즐겨찾기 한 가이드 목록 </Text>
         <FlatList
           contentContainerStyle={styles.guideContainer}
@@ -85,6 +94,15 @@ const MyPage = () => {
           renderItem={LikeGuide}
         />
       </View>
+      <View>
+        <Text style={styles.likedTitle}> 즐겨찾기 한 가이드 목록 </Text>
+        <FlatList
+          contentContainerStyle={styles.guideContainer}
+          key={'#'}
+          data={DummyData}
+          renderItem={LikeGuide}
+        />
+      </View> */}
     </ScrollView>
   );
 };
@@ -107,9 +125,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   noGuideContainer: {
-    position: 'absolute',
-    top: responsiveHeight(40),
-    left: responsiveWidth(10),
+    // position: 'absolute',
+    // top: responsiveHeight(40),
+    // left: responsiveWidth(10),
+    alignItems: 'center',
+    marginVertical: responsiveHeight(4)
   },
   guideContainer: {
     alignItems: 'center',
