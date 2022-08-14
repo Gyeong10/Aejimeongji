@@ -9,6 +9,7 @@ import {useSelector} from 'react-redux';
 import PlaceNavbar from '../../components/nav/PlaceNavbar';
 import ConnectMyInfo from '../../components/Profile/ConnectMyInfo';
 import LikeGuide from '../../components/Profile/LikeGuide';
+import MyPageLiked from '../../components/Profile/MyPageLiked';
 import NoGuide from '../../components/Profile/NoGuide';
 import {Colors} from '../../constants/styles';
 import {fetchLikedPlace} from '../../utils/place';
@@ -61,13 +62,13 @@ const MyPage = () => {
 
   useLayoutEffect(() => {
     const fetchInitialData = async () => {
-      // const likedGuide = await fetchLikedGuide();
-      // const likedPlace = await fetchLikedPlace();
-
+      const likedGuide = await fetchLikedGuide();
+      const likedPlace = await fetchLikedPlace();
       const res = await getDog(dogId);
+      console.log(likedPlace);
       setDogName(res.name);
-      // setGuide(likedGuide.data);
-      // setPlace(likedPlace.data)
+      setGuide(likedGuide.data);
+      setPlace(likedPlace.data);
       setSource(`http://i7d203.p.ssafy.io:8080/api/image/${res.imageName}`);
     };
     fetchInitialData();
@@ -79,18 +80,32 @@ const MyPage = () => {
       <View style={styles.ConnectMyInfo}>
         <ConnectMyInfo dogName={dogName} />
       </View>
-      <View style={styles.noGuideContainer}>
-        {place && <NoGuide navigate="PlaceHome">장소</NoGuide>}
-      </View>
-      <View style={styles.noGuideContainer}>
-        {guide && <NoGuide navigate="Guide">가이드</NoGuide>}
-      </View>
+      {place ? (
+        <View style={styles.likedContainer}>
+          <Text style={styles.likedTitle}> 즐겨찾기 한 장소 목록 </Text>
+          <MyPageLiked data={place} screen='PlaceDetail' />
+        </View>
+      ) : (
+        <View style={styles.noGuideContainer}>
+          {!place && <NoGuide navigate="PlaceHome">장소</NoGuide>}
+        </View>
+      )}
+      {guide ? (
+        <View style={styles.likedContainer}>
+          <Text style={styles.likedTitle}> 즐겨찾기 한 가이드 목록 </Text>
+          <MyPageLiked data={place} />
+        </View>
+      ) : (
+        <View style={styles.noGuideContainer}>
+          {!guide && <NoGuide navigate="Guide">가이드</NoGuide>}
+        </View>
+      )}
       {/* <View>
-        <Text style={styles.likedTitle}> 즐겨찾기 한 가이드 목록 </Text>
+        <Text style={styles.likedTitle}> 즐겨찾기 한 장소 목록 </Text>
         <FlatList
           contentContainerStyle={styles.guideContainer}
           key={'#'}
-          data={DummyData}
+          data={place}
           renderItem={LikeGuide}
         />
       </View>
@@ -99,7 +114,7 @@ const MyPage = () => {
         <FlatList
           contentContainerStyle={styles.guideContainer}
           key={'#'}
-          data={DummyData}
+          data={guide}
           renderItem={LikeGuide}
         />
       </View> */}
@@ -129,9 +144,12 @@ const styles = StyleSheet.create({
     // top: responsiveHeight(40),
     // left: responsiveWidth(10),
     alignItems: 'center',
-    marginVertical: responsiveHeight(4)
+    marginVertical: responsiveHeight(4),
   },
   guideContainer: {
     alignItems: 'center',
+  },
+  likedContainer: {
+    marginVertical: responsiveHeight(2)
   },
 });
